@@ -2,6 +2,8 @@
 
 An unofficial PC VR mod for the Steam version of Blue Estate. It adds stereoscopic rendering, headset tracking, and right Touch controller aiming and shooting over Meta Quest Link or Air Link. Blue Estate remains an on-rails game.
 
+[Download the one-minute Quest gameplay video (MP4)](https://github.com/i3dman420311/blue-estate-vr/releases/download/v0.1.0/blue-estate-vr-gameplay.mp4)
+
 ## Requirements
 
 - Windows and a local Steam installation of Blue Estate with the 64-bit DirectX 9 executable from Steam build 637056.
@@ -38,7 +40,7 @@ This repository contains the mod source and build scripts. You need your own cop
 | Left stick click or F8 | Switch between the comfort screen and immersive stereo during a level |
 | Right stick click | Open or close stereo calibration in immersive mode |
 
-Levels start on the comfort screen. The mod makes all seven Arcade stages selectable while it runs. Immersive stereo skips the rectangular low-health overlay while keeping the game's damage flash.
+Levels start on the comfort screen. The mod makes all seven Arcade stages selectable while it runs. Immersive stereo skips the rectangular overlays during low health and fast scene transitions while keeping the damage flash and camera movement.
 
 Run **VR Calibration Map.cmd** to adjust stereo in a frozen Arcade stage. In the calibration panel, A and B adjust depth and the left stick adjusts horizontal and vertical alignment. Settings are saved locally and used in regular levels.
 

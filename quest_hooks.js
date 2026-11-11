@@ -750,7 +750,7 @@ if (typeof rpc === "undefined") {
             });
             let drewRightHud = false;
             let leftGuiAim = null;
-            let leftLowLifeMaterial = null;
+            let leftHudMaterials = [];
             function setHudAim(slot, index) {
                 const point = reticlePixels[index] || [-16384, -16384];
                 write(slot, [...point, ...point]);
@@ -767,8 +767,11 @@ if (typeof rpc === "undefined") {
                 const guiAim = !gui.isNull() && !(gui.add(0x78).readU32() & 0x400) ? gui.add(0xe4) : NULL;
                 const savedAim = guiAim.isNull() ? null : guiAim.readByteArray(16);
                 const info = worldInfo();
-                const lowLifeSlot = info.isNull() ? NULL : info.add(0x112c);
-                const lowLifeMaterial = lowLifeSlot.isNull() ? NULL : lowLifeSlot.readPointer();
+                // Fast_Forward and NearDeath sample the combined back buffer as flat HUD tiles.
+                const hudMaterials = info.isNull() ? [] : [0x1120, 0x112c].map(offset => {
+                    const slot = info.add(offset);
+                    return { slot, value: slot.readPointer() };
+                }).filter(({ value }) => !value.isNull());
                 popHud(hudCanvas);
                 writeHudMatrix(1);
                 pushHud(hudCanvas, hudMatrix);
@@ -777,12 +780,11 @@ if (typeof rpc === "undefined") {
                 try {
                     // The replay runs inside this hook, so supply the right-eye position to the script directly.
                     if (savedAim && hasAim) setHudAim(guiAim, 1);
-                    // NearDeath samples the combined back buffer, so its HUD tile repeats both eyes.
-                    if (!lowLifeMaterial.isNull()) lowLifeSlot.writePointer(NULL);
+                    for (const { slot } of hudMaterials) slot.writePointer(NULL);
                     processHud(hud, this.context.rdx, NULL, NULL);
                     drewRightHud = savedAim !== null;
                 } finally {
-                    if (!lowLifeMaterial.isNull()) lowLifeSlot.writePointer(lowLifeMaterial);
+                    for (const { slot, value } of hudMaterials) slot.writePointer(value);
                     if (savedAim) guiAim.writeByteArray(savedAim);
                     hudEye = 0;
                     viewSlot.writePointer(stereoViews[0]);
@@ -794,16 +796,12 @@ if (typeof rpc === "undefined") {
                     leftGuiAim = { slot: guiAim, value: savedAim };
                     setHudAim(guiAim, 0);
                 }
-                if (!lowLifeMaterial.isNull()) {
-                    leftLowLifeMaterial = { slot: lowLifeSlot, value: lowLifeMaterial };
-                    lowLifeSlot.writePointer(NULL);
-                }
+                for (const { slot } of hudMaterials) slot.writePointer(NULL);
+                leftHudMaterials = hudMaterials;
             });
             Interceptor.attach(address(0x5472db), function () {
-                if (leftLowLifeMaterial) {
-                    leftLowLifeMaterial.slot.writePointer(leftLowLifeMaterial.value);
-                    leftLowLifeMaterial = null;
-                }
+                for (const { slot, value } of leftHudMaterials) slot.writePointer(value);
+                leftHudMaterials = [];
                 if (leftGuiAim) {
                     leftGuiAim.slot.writeByteArray(leftGuiAim.value);
                     leftGuiAim = null;
