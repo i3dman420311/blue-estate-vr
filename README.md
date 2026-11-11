@@ -2,7 +2,7 @@
 
 An unofficial PC VR mod for the Steam version of Blue Estate. It adds stereoscopic rendering, headset tracking, and right Touch controller aiming and shooting over Meta Quest Link or Air Link. Blue Estate remains an on-rails game.
 
-[Watch the one-minute Quest gameplay video on YouTube](https://youtu.be/Eo-qNmeCUX0)
+[Watch the one-minute Quest gameplay video on YouTube](https://youtu.be/Eo-qNmeCUX0?t=18)
 
 ## Requirements
 
